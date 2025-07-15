@@ -1,10 +1,9 @@
-const fetch = require("node-fetch");
 
-async function Log(level, package, message) {
+export async function log(level, pkg, message) {
   try {
     const validLevels = ["debug", "info", "warn", "error", "fatal"];
     if (!validLevels.includes(level.toLowerCase())) throw new Error("Invalid log level");
-    if (package.toLowerCase() !== "api") throw new Error("Invalid package for frontend");
+    if (pkg.toLowerCase() !== "api") throw new Error("Invalid package for frontend");
 
     const res = await fetch("http://20.244.56.144/evaluation-service/logs", {
       method: "POST",
@@ -15,17 +14,15 @@ async function Log(level, package, message) {
       body: JSON.stringify({
         stack: "frontend",
         level: level.toLowerCase(),
-        package: package.toLowerCase(),
+        package: pkg.toLowerCase(),
         message: message
       })
     });
 
     const responseBody = await res.json();
     console.log("✅ Log sent:", responseBody.logID, "Message:", responseBody.message);
-    return responseBody.logID; 
+    return responseBody.logID;
   } catch (err) {
     console.error("❌ Log failed:", err.message);
   }
 }
-
-module.exports = { Log };
